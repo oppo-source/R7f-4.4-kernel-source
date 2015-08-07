@@ -1,0 +1,37 @@
+# this file for oppo input devices
+
+config INPUT_OPPO
+	bool "for build directory oppo"
+	---help---
+	say Y to buid in
+
+# chenggang.li@BSP.TP modified for oppo 2014-07-09
+config SYNAPTICS_OPPO
+	bool "TP S3203 enable or not for OPPO"
+	select INPUT_OPPO
+	---help---
+	say Y to enable driver for Touchpanel useing S3203
+#ye.zhang@proDrv.Sen, 2014-01-08,add for hall sensor
+config HALL
+    bool "hall sensor for OPPO 13095"
+    select INPUT_OPPO
+    ---help---
+    say Y to add hall driver
+#LiuPing@proDrv.Sen, 2014-03-22,add for pswitch
+config PSWITCH
+    bool "pswtich for OPPO"
+    select INPUT_OPPO
+    ---help---
+    say Y to add pswtich driver    
+#qiang.zhang@proDrv.Sen, 2014-03-21,add for uei 
+config UEI
+    bool "uei for OPPO "
+    select INPUT_OPPO
+    ---help---
+    say Y to add uei driver
+#LiuPing@proDrv.Sen, 2014-03-04,add for dhall sensor m1120
+config DHALL_M1120
+    bool "dhall sensor m1120 for OPPO"
+    select INPUT_OPPO
+    ---help---
+    say Y to add hall driver

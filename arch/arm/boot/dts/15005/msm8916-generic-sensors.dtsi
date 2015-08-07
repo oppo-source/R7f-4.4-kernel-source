@@ -1,0 +1,124 @@
+#include "msm8916.dtsi"
+#include "msm8916-pinctrl.dtsi"
+
+&i2c_0 { /* BLSP1 QUP2 */
+	akm@c {
+		compatible = "ak,ak8963";
+		reg = <0x0c>;
+	/*	pinctrl-names = "default","sleep";
+		pinctrl-0 = <&akm_default>;
+		pinctrl-1 = <&akm_sleep>;*/
+		vdd-supply = <&pm8916_l17>;
+		vio-supply = <&pm8916_l6>;
+		akm,layout = <6>;
+		akm,gpio_rstn = <&msm_gpio 36 0x0>;
+		akm,auto-report;
+	};
+	
+	memsic@30 { /* Magnetic field sensor */
+		compatible = "memsic,mmc3416x";
+		reg = <0x30>;
+		vdd-supply = <&pm8916_l17>;
+		vio-supply = <&pm8916_l6>;
+		memsic,dir = "obverse-x-axis-leftward";
+		memsic,auto-report;
+	};
+	
+	avago@39 {
+		compatible = "avago,apds9930";
+		reg = <0x39>;
+		pinctrl-names = "default","sleep";
+		pinctrl-0 = <&apds99xx_default>;
+		pinctrl-1 = <&apds99xx_sleep>;
+		interrupt-parent = <&msm_gpio>;
+		interrupts = <113 0x2002>;
+		vdd-supply = <&pm8916_l17>;
+		vio-supply = <&pm8916_l6>;
+		avago,irq-gpio = <&msm_gpio 113 0x2002>;
+		avago,ps-threshold = <1023>;
+		avago,ps-hysteresis-threshold = <0>;
+		avago,ps-pulse = <10>;
+		avago,ps-pgain = <4>;
+		avago,als-B = <223>;
+		avago,als-C = <70>;
+		avago,als-D = <142>;
+		avago,ga-value = <105>;
+	};
+	kionix@1f { 
+		compatible = "kionix,kxtj9";
+		reg = <0x1f>;
+/*		interrupt-parent = <&msm_gpio>;
+		interrupts = <112 0x2>;*/
+		vdd-supply = <&pm8916_l17>;
+		vio-supply = <&pm8916_l6>;
+		kionix,min-interval = <5>;
+		kionix,init-interval = <200>;
+		kionix,axis-map-x = <0>;
+		kionix,axis-map-y = <1>;
+		kionix,axis-map-z = <2>;
+		kionix,g-range = <2>;
+		kionix,negate-x;
+	/*	kionix,negate-y;*/
+		kionix,negate-z;
+		kionix,res-12bit; 
+	};
+	st@19 {
+		compatible = "st,lis3dh";
+		reg = <0x19>;
+	/*	pinctrl-names = "lis3dh_default","lis3dh_sleep";
+		pinctrl-0 = <&lis3dh_int1_default>;
+		pinctrl-1 = <&lis3dh_int1_sleep>;*/
+		interrupt-parent = <&msm_gpio>;
+		vdd-supply = <&pm8916_l17>;
+		vddio-supply = <&pm8916_l6>;
+		st,min-interval = <5>;
+		st,init-interval = <200>;
+		st,axis-map-x = <0>;
+		st,axis-map-y = <1>;
+		st,axis-map-z = <2>;
+		st,g-range = <2>;
+		st,gpio-int1 = <&msm_gpio 112 0x2002>;
+		st,negate-x;
+	/*	st,negate-y;*/
+		st,negate-z;
+	};
+	
+	bosch@18 { /* Accelerometer sensor */
+		status="disable";
+		compatible = "bosch,bma2x2";
+		reg = <0x18>;
+	/*	pinctrl-names = "default";
+		pinctrl-0 = <&bma2x2_int1_default &bma2x2_int2_default>;*/
+		interrupt-parent = <&msm_gpio>;
+		interrupts = <112 0x2002>;
+		vdd-supply = <&pm8916_l17>;
+		vio-supply = <&pm8916_l6>;
+		bosch,init-interval = <200>;
+		bosch,place = <2>;
+		bosch,gpio-int1 = <&msm_gpio 112 0x2002>;
+		bosch,gpio-int2 = <&msm_gpio 114 0x2002>;
+	};
+
+	mpu6050@68 {
+		status="disable";
+		compatible = "invn,mpu6050";
+		reg = <0x68>;
+		pinctrl-names = "mpu_default","mpu_sleep";
+		pinctrl-0 = <&mpu6050_default>;
+		pinctrl-1 = <&mpu6050_sleep>;
+		interrupt-parent = <&msm_gpio>;
+		interrupts = <115 0x2>;
+		vdd-supply = <&pm8916_l17>;
+		vlogic-supply = <&pm8916_l16>;
+		vi2c-supply = <&pm8916_l6>;
+		invn,gpio-int = <&msm_gpio 115 0x2>;
+		invn,place = "Portrait Up Back Side";
+	};
+};
+
+&soc{
+/*	uei {
+		compatible = "uei";
+		uei,power-gpio = <&msm_gpio 115 0x2008>;
+	};*/
+};

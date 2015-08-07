@@ -1,0 +1,147 @@
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "msm8916-qrd.dtsi"
+#include "dsi-panel-otm8019a-fwvga-video.dtsi"
+#include "msm8916-camera-sensor-qrd-skui.dtsi"
+
+&soc {
+	flash_ocp8110:flashlight {
+		compatible = "qcom,leds-gpio-flash";
+		status = "okay";
+		pinctrl-names = "flash_default";
+		pinctrl-0 = <&ocp8110_default>;
+		qcom,flash-en = <&msm_gpio 31 0>;
+		qcom,flash-now = <&msm_gpio 32 0>;
+		qcom,op-seq = "flash_en", "flash_now";
+		qcom,torch-seq-val = <1 0>;
+		qcom,flash-seq-val = <1 1>;
+		linux,name = "flashlight";
+		linux,default-trigger = "flashlight-trigger";
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+		status = "okay";
+		pinctrl-names = "default";
+		pinctrl-0 = <&button_backlight_off>;
+
+		keypad-backlight {
+			gpios = <&msm_gpio 119 0>;
+			label = "button-backlight";
+			linux,default-trigger = "none";
+		};
+	};
+
+	sound {
+		compatible = "qcom,msm8x16-audio-codec";
+		qcom,model = "msm8x16-skui-snd-card";
+		qcom,msm-snd-card-id = <0>;
+		qcom,msm-ext-pa = "primary";
+		qcom,msm-codec-type = "internal";
+		qcom,msm-mbhc-hphl-swh = <1>;
+		qcom,msm-mbhc-gnd-swh = <0>;
+		qcom,msm-hs-micbias-type = "internal";
+		qcom,audio-routing =
+			"RX_BIAS", "MCLK",
+			"SPK_RX_BIAS", "MCLK",
+			"INT_LDO_H", "MCLK",
+			"MIC BIAS Internal1", "Handset Mic",
+			"MIC BIAS Internal2", "Headset Mic",
+			"MIC BIAS Internal1", "Secondary Mic",
+			"AMIC1", "MIC BIAS Internal1",
+			"AMIC2", "MIC BIAS Internal2",
+			"AMIC3", "MIC BIAS Internal1";
+		pinctrl-names = "cdc_lines_act",
+				"cdc_lines_sus";
+		pinctrl-0 = <&cdc_pdm_lines_act>;
+		pinctrl-1 = <&cdc_pdm_lines_sus>;
+	};
+};
+
+&pm8916_mpps {
+	mpp@a300 { /* MPP 4 */
+		/* Backlight PWM */
+		qcom,mode = <1>;		/* Digital output */
+		qcom,invert = <0>;		/* Disable Invert */
+		qcom,src-sel = <4>;		/* DTEST1 */
+		qcom,vin-sel = <0>;		/* VPH_PWR */
+		qcom,master-en = <1>;		/* Enable MPP */
+	};
+};
+
+&mdss_mdp {
+	qcom,mdss-pref-prim-intf = "dsi";
+};
+
+&pmx_mdss {
+	qcom,num-grp-pins = <1>;
+	qcom,pins = <&gp 25>;
+};
+
+&mdss_dsi0 {
+	qcom,dsi-pref-prim-pan = <&dsi_otm8019a_fwvga_video>;
+	pinctrl-names = "mdss_default", "mdss_sleep";
+	pinctrl-0 = <&mdss_dsi_active>;
+	pinctrl-1 = <&mdss_dsi_suspend>;
+
+	qcom,platform-reset-gpio = <&msm_gpio 25 0>;
+};
+
+&dsi_otm8019a_fwvga_video {
+       qcom,cont-splash-enabled;
+};
+
+&tlmm_pinmux {
+	ocp8110_pins {
+		qcom,pins = <&gp 31>, <&gp 32>;
+		qcom,num-grp-pins = <2>;
+		qcom,pin-func = <0>;
+		label = "ocp8110_pins";
+		ocp8110_default: en_default {
+			  drive-strength = <2>;
+			  bias-pull-down;
+		};
+	};
+
+	bma2x2_int1_pin {
+		qcom,pins = <&gp 112>;
+		qcom,num-grp-pins = <1>;
+		label = "bma2x2_int1_pin";
+		bma2x2_int1_default: int1_default {
+			  drive-strength = <6>;
+			  bias-pull-up;
+		};
+	};
+
+	bma2x2_int2_pin {
+		qcom,pins = <&gp 114>;
+		qcom,num-grp-pins = <1>;
+		label = "bma2x2_int2_pin";
+		bma2x2_int2_default: int2_default {
+			  drive-strength = <6>;
+			  bias-pull-up;
+		};
+	};
+};
+
+
+&sdhc_2 {
+	qcom,nonremovable;
+
+	interrupts = <0 1>;
+	interrupt-map = <0 &intc 0 125 0
+		1 &intc 0 221 0>;
+	interrupt-names = "hc_irq", "pwr_irq";
+	/delete-property/ cd-gpios;
+};
+
